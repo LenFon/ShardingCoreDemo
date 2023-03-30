@@ -18,7 +18,7 @@ namespace ShardingCore.EntityFrameworkCore.EntityTypeConfigurations
             builder.OwnsOne(o => o.Seller);
             builder.OwnsOne(o => o.ReceiverAddress);
             builder.OwnsOne(o => o.DeliveryAddress);
-            builder.OwnsOne(o => o.Products, b =>
+            builder.OwnsMany(o => o.Products, b =>
             {
                 b.ToJson();
             });
