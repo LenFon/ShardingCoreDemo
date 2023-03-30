@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
                 {
                     //connection is delegate input param
                     builder.UseSqlServer(connection, b => b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                    builder.EnableSensitiveDataLogging();
                 });
 
                 o.UseShardingMigrationConfigure(b =>

@@ -41,8 +41,8 @@ namespace ShardingCore.Web.Controllers
                 Id = Guid.NewGuid(),
                 Buyer = new Buyer { Id = Guid.NewGuid(), Name = "buyer" },
                 Seller = new Seller { Id = Guid.NewGuid(), Name = "seller" },
-                ReceiverAddress = new ReceiverAddress { Id = Guid.NewGuid(), Province = "r01", City = "r02", Area = "r03", Other = "xxx1" },
-                DeliveryAddress = new DeliveryAddress { Id = Guid.NewGuid(), Province = "d01", City = "d02", Area = "d03", Other = "xxx2" },
+                ReceiverAddress = new ReceiverAddress { Id = Guid.NewGuid(), Province = "r01", City = "r02", Area = "r03", Street = "r004", Other = "xxx1" },
+                DeliveryAddress = new DeliveryAddress { Id = Guid.NewGuid(), Province = "d01", City = "d02", Area = "d03", Street = "d004", Other = "xxx2" },
                 Products = new HashSet<Product>
                 {
                     new Product{ Key=Guid.NewGuid(),Name="product 1", Price=20,Unit="件",Quantity=10 },
@@ -59,14 +59,24 @@ namespace ShardingCore.Web.Controllers
 
         // PUT api/<OrdersController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task Put(Guid id, [FromBody] string value)
         {
+            var order = await _db.Set<Order>().FindAsync(id) ?? throw new Exception("订单未找到");
+
+            order.Seller.Name = value;
+
+            await _db.SaveChangesAsync();
         }
 
         // DELETE api/<OrdersController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task Delete(Guid id)
         {
+            var order = await _db.Set<Order>().FindAsync(id) ?? throw new Exception("订单未找到");
+
+            _db.Remove(order);
+
+            await _db.SaveChangesAsync();
         }
     }
 }
