@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
                 {
                     //connection is delegate input param
                     builder.UseSqlServer(connection);
+                    builder.EnableSensitiveDataLogging();
                 });
 
                 o.UseShardingMigrationConfigure(b =>

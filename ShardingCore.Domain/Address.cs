@@ -20,6 +20,11 @@ public class Address
     public string Area { get; set; } = default!;
 
     /// <summary>
+    /// 街道
+    /// </summary>
+    public string Street { get; set; } = default!;
+
+    /// <summary>
     /// 其他部分
     /// </summary>
     public string Other { get; set; } = default!;

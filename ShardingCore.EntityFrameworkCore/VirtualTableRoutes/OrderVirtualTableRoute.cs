@@ -13,5 +13,5 @@ internal class OrderVirtualTableRoute : AbstractSimpleShardingMonthKeyDateTimeVi
         builder.ShardingProperty(o => o.CreationTime);
     }
 
-    public override DateTime GetBeginTime() => new(2023, 1, 1);
+    public override DateTime GetBeginTime() => new(2022, 1, 1);
 }
