@@ -18,13 +18,14 @@ public static class ServiceCollectionExtensions
                 o.UseShardingQuery((connStr, builder) =>
                 {
                     //connStr is delegate input param
-                    builder.UseSqlServer(connStr);
+                    builder.UseSqlServer(connStr, b => b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                    builder.EnableSensitiveDataLogging();
+
                 });
                 o.UseShardingTransaction((connection, builder) =>
                 {
                     //connection is delegate input param
-                    builder.UseSqlServer(connection);
-                    builder.EnableSensitiveDataLogging();
+                    builder.UseSqlServer(connection, b => b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
                 });
 
                 o.UseShardingMigrationConfigure(b =>

@@ -27,9 +27,9 @@ namespace ShardingCore.Web.Controllers
 
         // GET api/<OrdersController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<Order?> Get(Guid id)
         {
-            return "value";
+            return await _db.Set<Order>().FirstOrDefaultAsync(w => w.Id == id);
         }
 
         // POST api/<OrdersController>
