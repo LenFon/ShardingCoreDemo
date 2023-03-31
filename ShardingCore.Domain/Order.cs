@@ -17,7 +17,7 @@ public class Order
     /// <summary>
     /// 发货地址信息
     /// </summary>
-    public DeliveryAddress? DeliveryAddress { get; set; }
+    public Address? DeliveryAddress { get; set; }
 
     /// <summary>
     /// 订单Id
@@ -42,7 +42,7 @@ public class Order
     /// <summary>
     /// 收货地址信息
     /// </summary>
-    public ReceiverAddress ReceiverAddress { get; set; } = default!;
+    public Address ReceiverAddress { get; set; } = default!;
 
     /// <summary>
     /// 卖家信息

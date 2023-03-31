@@ -41,8 +41,8 @@ namespace ShardingCore.Web.Controllers
                 Id = Guid.NewGuid(),
                 Buyer = new Buyer { Id = Guid.NewGuid(), Name = "buyer" },
                 Seller = new Seller { Id = Guid.NewGuid(), Name = "seller" },
-                ReceiverAddress = new ReceiverAddress { Id = Guid.NewGuid(), Province = "r01", City = "r02", Area = "r03", Street = "r004", Other = "xxx1" },
-                DeliveryAddress = new DeliveryAddress { Id = Guid.NewGuid(), Province = "d01", City = "d02", Area = "d03", Street = "d004", Other = "xxx2" },
+                ReceiverAddress = new Address { Id = Guid.NewGuid(), Province = "r01", City = "r02", Area = "r03", Street = "r004", Other = "xxx1" },
+                DeliveryAddress = new Address { Id = Guid.NewGuid(), Province = "d01", City = "d02", Area = "d03", Street = "d004", Other = "xxx2" },
                 Products = new HashSet<Product>
                 {
                     new Product{ Key=Guid.NewGuid(),Name="product 1", Price=20,Unit="件",Quantity=10 },

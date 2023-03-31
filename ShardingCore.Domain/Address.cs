@@ -29,6 +29,3 @@ public class Address
     /// </summary>
     public string Other { get; set; } = default!;
 }
-
-public class DeliveryAddress : Address { }
-public class ReceiverAddress : Address { }
