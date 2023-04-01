@@ -2,6 +2,13 @@
 
 namespace ShardingCore.Domain;
 
+public record OrderId
+{
+    public OrderId(Guid value) => Value = value;
+
+    public Guid Value { get; }
+}
+
 public class Order
 {
     /// <summary>
@@ -22,7 +29,7 @@ public class Order
     /// <summary>
     /// 订单Id
     /// </summary>
-    public Guid Id { get; set; }
+    public OrderId Id { get; set; }
 
     /// <summary>
     /// 订单状态

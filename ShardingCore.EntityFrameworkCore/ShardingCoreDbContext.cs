@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ShardingCore.Core.VirtualRoutes.TableRoutes.RouteTails.Abstractions;
 using ShardingCore.Domain;
 using ShardingCore.EntityFrameworkCore.EntityTypeConfigurations;
+using ShardingCore.EntityFrameworkCore.ValueConverters;
 
 namespace ShardingCore.EntityFrameworkCore;
 
@@ -14,6 +15,13 @@ public class ShardingCoreDbContext : AbstractShardingDbContext, IShardingTableDb
     }
 
     public IRouteTail RouteTail { get; set; } = default!;
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+
+        configurationBuilder.Properties<OrderId>().HaveConversion<OrderIdConverter>();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

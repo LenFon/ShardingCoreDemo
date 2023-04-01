@@ -29,7 +29,7 @@ namespace ShardingCore.Web.Controllers
         [HttpGet("{id}")]
         public async Task<Order?> Get(Guid id)
         {
-            return await _db.Set<Order>().FirstOrDefaultAsync(w => w.Id == id);
+            return await _db.Set<Order>().FirstOrDefaultAsync(w => w.Id == new OrderId(id));
         }
 
         // POST api/<OrdersController>
@@ -38,7 +38,7 @@ namespace ShardingCore.Web.Controllers
         {
             var order = new Order
             {
-                Id = Guid.NewGuid(),
+                Id = new OrderId(Guid.NewGuid()),
                 Buyer = new Buyer { Id = Guid.NewGuid(), Name = "buyer" },
                 Seller = new Seller { Id = Guid.NewGuid(), Name = "seller" },
                 ReceiverAddress = new Address { Id = Guid.NewGuid(), Province = "r01", City = "r02", Area = "r03", Street = "r004", Other = "xxx1" },
@@ -61,7 +61,7 @@ namespace ShardingCore.Web.Controllers
         [HttpPut("{id}")]
         public async Task Put(Guid id, [FromBody] string value)
         {
-            var order = await _db.Set<Order>().FindAsync(id) ?? throw new Exception("订单未找到");
+            var order = await _db.Set<Order>().FindAsync(new OrderId(id)) ?? throw new Exception("订单未找到");
 
             order.Seller.Name = value;
 
@@ -72,7 +72,7 @@ namespace ShardingCore.Web.Controllers
         [HttpDelete("{id}")]
         public async Task Delete(Guid id)
         {
-            var order = await _db.Set<Order>().FindAsync(id) ?? throw new Exception("订单未找到");
+            var order = await _db.Set<Order>().FindAsync(new OrderId(id)) ?? throw new Exception("订单未找到");
 
             _db.Remove(order);
 
