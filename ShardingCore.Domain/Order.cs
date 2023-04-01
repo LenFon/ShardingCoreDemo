@@ -2,12 +2,7 @@
 
 namespace ShardingCore.Domain;
 
-public record OrderId
-{
-    public OrderId(Guid value) => Value = value;
-
-    public Guid Value { get; }
-}
+public readonly record struct OrderId(Guid Value);
 
 public class Order
 {
