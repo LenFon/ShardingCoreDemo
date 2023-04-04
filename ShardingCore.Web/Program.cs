@@ -24,14 +24,15 @@ try
     builder.Services.AddStronglyTypedIdTypeConverter(assemblies);
     builder.Services.AddControllers().AddJsonOptions(o =>
     {
-        o.JsonSerializerOptions.Converters.Add(new SystemTextJsonConverter<OrderId, Guid>());
+        o.JsonSerializerOptions.Converters.Add(new StronglyTypedIdJsonConverterFactory());
+        o.JsonSerializerOptions.MaxDepth = 10;
     });
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(o =>
     {
-        o.MapType<OrderId>(() => new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string", Format = "uuid" });
+        o.MapTypeOfStronglyTypedId(assemblies);
     });
 
     builder.Services.AddShardingCoreDbContext(o =>

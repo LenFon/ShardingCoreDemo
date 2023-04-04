@@ -8,26 +8,82 @@ namespace ShardingCore.Web
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddStronglyTypedIdTypeConverter(this IServiceCollection services, params Assembly[] assemblies)
+        {
+            if (assemblies == null || !assemblies.Any())
+                return services;
+
+            return AddStronglyTypedIdTypeConverter(services, assemblies.SelectMany(s => s.GetTypes()));
+        }
+
         public static IServiceCollection AddStronglyTypedIdTypeConverter(this IServiceCollection services, IEnumerable<Assembly> assemblies)
         {
-            var infos = assemblies.SelectMany(s => s.GetTypes())
-                .Where(w => !w.IsAbstract && !w.IsInterface && !w.IsGenericType)
-                .Select(s => new
-                {
-                    StronglyTypedIdType = s,
-                    StronglyTypedIdInterfaceType = s.GetInterfaces().FirstOrDefault(w => w.IsGenericType && w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<,>))
-                })
-                .Where(w => w.StronglyTypedIdInterfaceType is not null)
-                .ToList();
+            if (assemblies == null || !assemblies.Any())
+                return services;
 
-            foreach (var info in infos)
+            return AddStronglyTypedIdTypeConverter(services, assemblies.SelectMany(s => s.GetTypes())); 
+        }
+
+        public static IServiceCollection AddStronglyTypedIdTypeConverter(this IServiceCollection services, params Type[] stronglyTypedIdTypes)
+        {
+            if (stronglyTypedIdTypes == null || !stronglyTypedIdTypes.Any())
+                return services;
+
+            foreach (var stronglyTypedIdType in stronglyTypedIdTypes)
             {
-                var converter = typeof(StronglyTypedIdTypeConverter<,>).MakeGenericType(info.StronglyTypedIdInterfaceType.GenericTypeArguments);
-
-                TypeDescriptor.AddAttributes(info.StronglyTypedIdType, new TypeConverterAttribute(converter));
+                AddStronglyTypedIdTypeConverter(services, stronglyTypedIdType);
             }
 
             return services;
+        }
+
+
+        public static IServiceCollection AddStronglyTypedIdTypeConverter(this IServiceCollection services, IEnumerable<Type> stronglyTypedIdTypes)
+        {
+            if (stronglyTypedIdTypes == null || !stronglyTypedIdTypes.Any())
+                return services;
+
+            foreach (var stronglyTypedIdType in stronglyTypedIdTypes)
+            {
+                AddStronglyTypedIdTypeConverter(services, stronglyTypedIdType);
+            }
+
+            return services;
+        }
+
+        public static IServiceCollection AddStronglyTypedIdTypeConverter(this IServiceCollection services, Type stronglyTypedIdType)
+        {
+            if (IsStronglyTypedId(stronglyTypedIdType, out var _, out var primitiveIdType))
+            {
+                var converter = typeof(StronglyTypedIdTypeConverter<,>).MakeGenericType(stronglyTypedIdType, primitiveIdType!);
+
+                TypeDescriptor.AddAttributes(stronglyTypedIdType, new TypeConverterAttribute(converter));
+            }
+
+            return services;
+        }
+
+        private static bool IsStronglyTypedId(Type type, out Type? stronglyTypedIdType, out Type? primitiveIdType)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (type.GetInterfaces()
+                .FirstOrDefault(w =>
+                    w.IsGenericType &&
+                    w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<,>)) is Type stronglyTypedIdInterfaceType)
+            {
+                var arguments = stronglyTypedIdInterfaceType.GetGenericArguments();
+                stronglyTypedIdType = arguments[0];
+                primitiveIdType = arguments[1];
+
+                return true;
+            }
+
+            stronglyTypedIdType = null;
+            primitiveIdType = null;
+
+            return false;
         }
 
         class StronglyTypedIdTypeConverter<TStronglyTypedId, TPrimitiveId> : TypeConverter
