@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace ShardingCore.Domain;
+﻿namespace ShardingCore.Domain;
 
 
-public record struct OrderId(Guid Value) : IStronglyTypedId<OrderId, Guid>
+public record struct OrderId(Guid Value) : IStronglyTypedId<Guid>
 {
-    public static OrderId Create(Guid value) => new(value);
+    public static IStronglyTypedId<Guid> Create(Guid value) => new OrderId(value);
 }
 
 public class Order

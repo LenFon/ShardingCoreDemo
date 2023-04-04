@@ -77,7 +77,7 @@ public static class SwaggerGenOptionsExtensions
 
     public static void MapTypeOfStronglyTypedId(this SwaggerGenOptions options, Type stronglyTypedIdType)
     {
-        if (IsStronglyTypedId(stronglyTypedIdType, out var _, out var primitiveIdType))
+        if (IsStronglyTypedId(stronglyTypedIdType, out var primitiveIdType))
         {
             if (Cache.TryGetValue(primitiveIdType!, out var value))
             {
@@ -90,7 +90,7 @@ public static class SwaggerGenOptionsExtensions
         }
     }
 
-    private static bool IsStronglyTypedId(Type type, out Type? stronglyTypedIdType, out Type? primitiveIdType)
+    private static bool IsStronglyTypedId(Type type, out Type? primitiveIdType)
     {
         if (type is null)
             throw new ArgumentNullException(nameof(type));
@@ -98,16 +98,14 @@ public static class SwaggerGenOptionsExtensions
         if (type.GetInterfaces()
             .FirstOrDefault(w =>
                 w.IsGenericType &&
-                w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<,>)) is Type stronglyTypedIdInterfaceType)
+                w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<>)) is Type stronglyTypedIdInterfaceType)
         {
             var arguments = stronglyTypedIdInterfaceType.GetGenericArguments();
-            stronglyTypedIdType = arguments[0];
-            primitiveIdType = arguments[1];
+            primitiveIdType = arguments[0];
 
             return true;
         }
 
-        stronglyTypedIdType = null;
         primitiveIdType = null;
 
         return false;

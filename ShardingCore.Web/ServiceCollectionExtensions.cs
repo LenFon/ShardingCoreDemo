@@ -21,7 +21,7 @@ namespace ShardingCore.Web
             if (assemblies == null || !assemblies.Any())
                 return services;
 
-            return AddStronglyTypedIdTypeConverter(services, assemblies.SelectMany(s => s.GetTypes())); 
+            return AddStronglyTypedIdTypeConverter(services, assemblies.SelectMany(s => s.GetTypes()));
         }
 
         public static IServiceCollection AddStronglyTypedIdTypeConverter(this IServiceCollection services, params Type[] stronglyTypedIdTypes)
@@ -53,7 +53,7 @@ namespace ShardingCore.Web
 
         public static IServiceCollection AddStronglyTypedIdTypeConverter(this IServiceCollection services, Type stronglyTypedIdType)
         {
-            if (IsStronglyTypedId(stronglyTypedIdType, out var _, out var primitiveIdType))
+            if (IsStronglyTypedId(stronglyTypedIdType, out var primitiveIdType))
             {
                 var converter = typeof(StronglyTypedIdTypeConverter<,>).MakeGenericType(stronglyTypedIdType, primitiveIdType!);
 
@@ -63,7 +63,7 @@ namespace ShardingCore.Web
             return services;
         }
 
-        private static bool IsStronglyTypedId(Type type, out Type? stronglyTypedIdType, out Type? primitiveIdType)
+        private static bool IsStronglyTypedId(Type type, out Type? primitiveIdType)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
@@ -71,23 +71,21 @@ namespace ShardingCore.Web
             if (type.GetInterfaces()
                 .FirstOrDefault(w =>
                     w.IsGenericType &&
-                    w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<,>)) is Type stronglyTypedIdInterfaceType)
+                    w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<>)) is Type stronglyTypedIdInterfaceType)
             {
                 var arguments = stronglyTypedIdInterfaceType.GetGenericArguments();
-                stronglyTypedIdType = arguments[0];
-                primitiveIdType = arguments[1];
+                primitiveIdType = arguments[0];
 
                 return true;
             }
 
-            stronglyTypedIdType = null;
             primitiveIdType = null;
 
             return false;
         }
 
         class StronglyTypedIdTypeConverter<TStronglyTypedId, TPrimitiveId> : TypeConverter
-            where TStronglyTypedId : IStronglyTypedId<TStronglyTypedId, TPrimitiveId>
+            where TStronglyTypedId : IStronglyTypedId<TPrimitiveId>
             where TPrimitiveId : struct, IComparable, IComparable<TPrimitiveId>, IEquatable<TPrimitiveId>, ISpanParsable<TPrimitiveId>
         {
             public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType) =>
@@ -115,7 +113,7 @@ namespace ShardingCore.Web
                 if (value is null)
                     throw new ArgumentNullException(nameof(value));
 
-                if (value is IStronglyTypedId<TStronglyTypedId, TPrimitiveId> id)
+                if (value is IStronglyTypedId<TPrimitiveId> id)
                 {
                     if (destinationType == typeof(string))
                     {

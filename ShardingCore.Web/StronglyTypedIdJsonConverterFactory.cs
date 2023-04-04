@@ -16,16 +16,16 @@ public class StronglyTypedIdJsonConverterFactory : JsonConverterFactory
 
     private JsonConverter CreateConverter(Type typeToConvert)
     {
-        if (!IsStronglyTypedId(typeToConvert, out var _, out var primitiveIdType))
+        if (!IsStronglyTypedId(typeToConvert, out var primitiveIdType))
             throw new InvalidOperationException($"Cannot create converter for '{typeToConvert}'");
 
         var type = typeof(StronglyTypedIdJsonConverter<,>).MakeGenericType(typeToConvert, primitiveIdType!);
         return (JsonConverter)Activator.CreateInstance(type)!;
     }
 
-    private static bool IsStronglyTypedId(Type type) => IsStronglyTypedId(type, out var _, out var _);
+    private static bool IsStronglyTypedId(Type type) => IsStronglyTypedId(type, out var _);
 
-    private static bool IsStronglyTypedId(Type type, out Type? stronglyTypedIdType, out Type? primitiveIdType)
+    private static bool IsStronglyTypedId(Type type, out Type? primitiveIdType)
     {
         if (type is null)
             throw new ArgumentNullException(nameof(type));
@@ -33,29 +33,27 @@ public class StronglyTypedIdJsonConverterFactory : JsonConverterFactory
         if (type.GetInterfaces()
             .FirstOrDefault(w =>
                 w.IsGenericType &&
-                w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<,>)) is Type stronglyTypedIdInterfaceType)
+                w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<>)) is Type stronglyTypedIdInterfaceType)
         {
             var arguments = stronglyTypedIdInterfaceType.GetGenericArguments();
-            stronglyTypedIdType = arguments[0];
-            primitiveIdType = arguments[1];
+            primitiveIdType = arguments[0];
 
             return true;
         }
 
-        stronglyTypedIdType = null;
         primitiveIdType = null;
 
         return false;
     }
 
     private class StronglyTypedIdJsonConverter<TStrongTypedId, TPrimitiveId> : JsonConverter<TStrongTypedId>
-        where TStrongTypedId : IStronglyTypedId<TStrongTypedId, TPrimitiveId>
+        where TStrongTypedId : IStronglyTypedId<TPrimitiveId>
         where TPrimitiveId : struct, IComparable, IComparable<TPrimitiveId>, IEquatable<TPrimitiveId>, ISpanParsable<TPrimitiveId>
     {
         public override TStrongTypedId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var value = (TPrimitiveId)GetValue(reader);
-            return TStrongTypedId.Create(value);
+            return (TStrongTypedId)TStrongTypedId.Create(value);
         }
 
         private static object GetValue(Utf8JsonReader reader)
