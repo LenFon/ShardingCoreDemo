@@ -2,7 +2,11 @@
 
 namespace ShardingCore.Domain;
 
-public readonly record struct OrderId(Guid Value);
+
+public record struct OrderId(Guid Value) : IStronglyTypedId<OrderId, Guid>
+{
+    public static OrderId Create(Guid value) => new(value);
+}
 
 public class Order
 {

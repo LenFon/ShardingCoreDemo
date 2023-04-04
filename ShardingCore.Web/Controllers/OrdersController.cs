@@ -2,6 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using ShardingCore.Domain;
 using ShardingCore.EntityFrameworkCore;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Reflection;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,9 +31,9 @@ namespace ShardingCore.Web.Controllers
 
         // GET api/<OrdersController>/5
         [HttpGet("{id}")]
-        public async Task<Order?> Get(Guid id)
+        public async Task<Order?> Get(OrderId id)
         {
-            return await _db.Set<Order>().FirstOrDefaultAsync(w => w.Id == new OrderId(id));
+            return await _db.Set<Order>().FirstOrDefaultAsync(w => w.Id == id);
         }
 
         // POST api/<OrdersController>

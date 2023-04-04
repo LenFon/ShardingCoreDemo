@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using ShardingCore;
+using ShardingCore.Domain;
 using ShardingCore.EntityFrameworkCore;
+using ShardingCore.Web;
+using ShardingCore.Web.Controllers;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -13,12 +16,23 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
+    var assemblies = new[]
+    {
+        typeof(Order).Assembly
+    };
     // Add services to the container.
+    builder.Services.AddStronglyTypedIdTypeConverter(assemblies);
+    builder.Services.AddControllers().AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.Converters.Add(new SystemTextJsonConverter<OrderId, Guid>());
+    });
 
-    builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(o =>
+    {
+        o.MapType<OrderId>(() => new Microsoft.OpenApi.Models.OpenApiSchema { Type = "string", Format = "uuid" });
+    });
 
     builder.Services.AddShardingCoreDbContext(o =>
     {
