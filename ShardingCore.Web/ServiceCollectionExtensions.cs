@@ -100,28 +100,27 @@ namespace ShardingCore.Web
 
             public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
             {
-                if (TPrimitiveId.TryParse(value.ToString(), null, out var val))
+                return value switch
                 {
-                    return TStronglyTypedId.Create(val);
-                }
-
-                return base.ConvertFrom(context, culture, value);
+                    TPrimitiveId val => TStronglyTypedId.Create(val),
+                    string val when string.IsNullOrEmpty(val) && TPrimitiveId.TryParse(val, null, out var result) =>
+                        TStronglyTypedId.Create(result),
+                    _ => base.ConvertFrom(context, culture, value),
+                };
             }
 
             public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
             {
-                if (value is null)
-                    throw new ArgumentNullException(nameof(value));
-
                 if (value is IStronglyTypedId<TPrimitiveId> id)
                 {
-                    if (destinationType == typeof(string))
-                    {
-                        return id.Value.ToString();
-                    }
                     if (destinationType == typeof(TPrimitiveId))
                     {
                         return id.Value;
+                    }
+
+                    if (destinationType == typeof(string))
+                    {
+                        return id.Value.ToString();
                     }
                 }
 
