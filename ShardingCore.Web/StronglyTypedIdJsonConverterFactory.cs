@@ -1,4 +1,4 @@
-﻿using ShardingCore.Domain;
+﻿using StronglyTypedId;
 using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -9,41 +9,18 @@ public class StronglyTypedIdJsonConverterFactory : JsonConverterFactory
 {
     private static readonly ConcurrentDictionary<Type, JsonConverter> Cache = new();
 
-    public override bool CanConvert(Type typeToConvert) => IsStronglyTypedId(typeToConvert);
+    public override bool CanConvert(Type typeToConvert) => typeToConvert.IsStronglyTypedId();
 
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options) =>
         Cache.GetOrAdd(typeToConvert, CreateConverter);
 
     private JsonConverter CreateConverter(Type typeToConvert)
     {
-        if (!IsStronglyTypedId(typeToConvert, out var primitiveIdType))
+        if (!typeToConvert.TryGetPrimitiveIdType(out var primitiveIdType))
             throw new InvalidOperationException($"Cannot create converter for '{typeToConvert}'");
 
         var type = typeof(StronglyTypedIdJsonConverter<,>).MakeGenericType(typeToConvert, primitiveIdType!);
         return (JsonConverter)Activator.CreateInstance(type)!;
-    }
-
-    private static bool IsStronglyTypedId(Type type) => IsStronglyTypedId(type, out var _);
-
-    private static bool IsStronglyTypedId(Type type, out Type? primitiveIdType)
-    {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
-        if (type.GetInterfaces()
-            .FirstOrDefault(w =>
-                w.IsGenericType &&
-                w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<>)) is Type stronglyTypedIdInterfaceType)
-        {
-            var arguments = stronglyTypedIdInterfaceType.GetGenericArguments();
-            primitiveIdType = arguments[0];
-
-            return true;
-        }
-
-        primitiveIdType = null;
-
-        return false;
     }
 
     private class StronglyTypedIdJsonConverter<TStrongTypedId, TPrimitiveId> : JsonConverter<TStrongTypedId>

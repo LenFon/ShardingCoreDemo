@@ -1,5 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
-using ShardingCore.Domain;
+using StronglyTypedId;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -77,7 +77,7 @@ public static class SwaggerGenOptionsExtensions
 
     public static void MapTypeOfStronglyTypedId(this SwaggerGenOptions options, Type stronglyTypedIdType)
     {
-        if (IsStronglyTypedId(stronglyTypedIdType, out var primitiveIdType))
+        if (stronglyTypedIdType.TryGetPrimitiveIdType(out var primitiveIdType))
         {
             if (Cache.TryGetValue(primitiveIdType!, out var value))
             {
@@ -88,26 +88,5 @@ public static class SwaggerGenOptionsExtensions
                 options.MapType(stronglyTypedIdType, () => new OpenApiSchema());
             }
         }
-    }
-
-    private static bool IsStronglyTypedId(Type type, out Type? primitiveIdType)
-    {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
-        if (type.GetInterfaces()
-            .FirstOrDefault(w =>
-                w.IsGenericType &&
-                w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<>)) is Type stronglyTypedIdInterfaceType)
-        {
-            var arguments = stronglyTypedIdInterfaceType.GetGenericArguments();
-            primitiveIdType = arguments[0];
-
-            return true;
-        }
-
-        primitiveIdType = null;
-
-        return false;
     }
 }

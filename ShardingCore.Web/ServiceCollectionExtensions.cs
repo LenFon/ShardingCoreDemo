@@ -1,4 +1,5 @@
 ﻿using ShardingCore.Domain;
+using StronglyTypedId;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -53,7 +54,7 @@ namespace ShardingCore.Web
 
         public static IServiceCollection AddStronglyTypedIdTypeConverter(this IServiceCollection services, Type stronglyTypedIdType)
         {
-            if (IsStronglyTypedId(stronglyTypedIdType, out var primitiveIdType))
+            if (stronglyTypedIdType.TryGetPrimitiveIdType(out var primitiveIdType))
             {
                 var converter = typeof(StronglyTypedIdTypeConverter<,>).MakeGenericType(stronglyTypedIdType, primitiveIdType!);
 
@@ -61,27 +62,6 @@ namespace ShardingCore.Web
             }
 
             return services;
-        }
-
-        private static bool IsStronglyTypedId(Type type, out Type? primitiveIdType)
-        {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
-
-            if (type.GetInterfaces()
-                .FirstOrDefault(w =>
-                    w.IsGenericType &&
-                    w.GetGenericTypeDefinition() == typeof(IStronglyTypedId<>)) is Type stronglyTypedIdInterfaceType)
-            {
-                var arguments = stronglyTypedIdInterfaceType.GetGenericArguments();
-                primitiveIdType = arguments[0];
-
-                return true;
-            }
-
-            primitiveIdType = null;
-
-            return false;
         }
 
         class StronglyTypedIdTypeConverter<TStronglyTypedId, TPrimitiveId> : TypeConverter

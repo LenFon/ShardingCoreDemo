@@ -1,4 +1,6 @@
-﻿namespace ShardingCore.Domain;
+﻿using StronglyTypedId;
+
+namespace ShardingCore.Domain;
 
 
 public record struct OrderId(Guid Value) : IStronglyTypedId<Guid>
