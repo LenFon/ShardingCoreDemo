@@ -1,4 +1,4 @@
-﻿using StronglyTypedId;
+﻿using Len.StronglyTypedId;
 
 namespace ShardingCore.Domain;
 

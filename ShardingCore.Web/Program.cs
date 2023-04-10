@@ -5,6 +5,7 @@ using ShardingCore.Domain;
 using ShardingCore.EntityFrameworkCore;
 using ShardingCore.Web;
 using ShardingCore.Web.Controllers;
+using System.Text.Json;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -18,13 +19,17 @@ try
 
     var assemblies = new[]
     {
-        typeof(Order).Assembly
+        typeof(Order).Assembly,
+        typeof(Program).Assembly,
     };
+
     // Add services to the container.
-    builder.Services.AddStronglyTypedIdTypeConverter(assemblies);
-    builder.Services.AddControllers().AddJsonOptions(o =>
+    builder.Services.AddControllers().AddStronglyTypedId(options =>
     {
-        o.JsonSerializerOptions.Converters.Add(new StronglyTypedIdJsonConverterFactory());
+        options.RegisterServicesFromAssemblies(assemblies);
+    }).AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.AddStronglyTypedId();
         o.JsonSerializerOptions.MaxDepth = 10;
     });
 
@@ -32,7 +37,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(o =>
     {
-        o.MapTypeOfStronglyTypedId(assemblies);
+        o.AddStronglyTypedId(assemblies);
     });
 
     builder.Services.AddShardingCoreDbContext(o =>

@@ -7,6 +7,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Len.StronglyTypedId.AspNetCore" Version="1.0.3" />
+		<PackageReference Include="Len.StronglyTypedId.Swashbuckle.AspNetCore" Version="1.0.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.4">
 			<PrivateAssets>all</PrivateAssets>
