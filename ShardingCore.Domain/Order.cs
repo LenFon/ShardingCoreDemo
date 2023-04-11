@@ -13,7 +13,7 @@ public class Order
     /// <summary>
     /// 买家信息
     /// </summary>
-    public Buyer Buyer { get; set; } = default!;
+    public Account Buyer { get; set; } = default!;
 
     /// <summary>
     /// 创建时间
@@ -53,7 +53,7 @@ public class Order
     /// <summary>
     /// 卖家信息
     /// </summary>
-    public Seller Seller { get; set; } = default!;
+    public Account Seller { get; set; } = default!;
 }
 
 public enum OrderStatus

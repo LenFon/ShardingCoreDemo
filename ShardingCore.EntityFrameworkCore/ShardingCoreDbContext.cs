@@ -1,10 +1,9 @@
-﻿using ShardingCore.Sharding.Abstractions;
-using ShardingCore.Sharding;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ShardingCore.Core.VirtualRoutes.TableRoutes.RouteTails.Abstractions;
 using ShardingCore.Domain;
 using ShardingCore.EntityFrameworkCore.EntityTypeConfigurations;
-using ShardingCore.EntityFrameworkCore.ValueConverters;
+using ShardingCore.Sharding;
+using ShardingCore.Sharding.Abstractions;
 
 namespace ShardingCore.EntityFrameworkCore;
 
@@ -19,8 +18,10 @@ public class ShardingCoreDbContext : AbstractShardingDbContext, IShardingTableDb
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         base.ConfigureConventions(configurationBuilder);
+        configurationBuilder.Properties<string>().HaveMaxLength(50);
+        configurationBuilder.Properties<decimal>().HaveColumnType("decimal(18,4)");
 
-        configurationBuilder.Properties<OrderId>().HaveConversion<OrderIdConverter>();
+        configurationBuilder.AddStronglyTypedId(typeof(OrderId).Assembly);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

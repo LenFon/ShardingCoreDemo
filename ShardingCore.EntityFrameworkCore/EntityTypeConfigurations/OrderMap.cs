@@ -21,8 +21,6 @@ namespace ShardingCore.EntityFrameworkCore.EntityTypeConfigurations
             builder.OwnsMany(o => o.Products, b =>
             {
                 b.ToJson();
-                b.Property(p => p.Price).HasColumnType("decimal(18,4)");
-                b.Property(p => p.Quantity).HasColumnType("decimal(18,4)");
             });
         }
     }

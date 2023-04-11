@@ -43,8 +43,8 @@ namespace ShardingCore.Web.Controllers
             var order = new Order
             {
                 Id = new OrderId(Guid.NewGuid()),
-                Buyer = new Buyer { Id = Guid.NewGuid(), Name = "buyer" },
-                Seller = new Seller { Id = Guid.NewGuid(), Name = "seller" },
+                Buyer = new Account { Id = new AccountId(Guid.NewGuid()), Name = "buyer" },
+                Seller = new Account { Id = new AccountId(Guid.NewGuid()), Name = "seller" },
                 ReceiverAddress = new Address { Id = Guid.NewGuid(), Province = "r01", City = "r02", Area = "r03", Street = "r004", Other = "xxx1" },
                 DeliveryAddress = new Address { Id = Guid.NewGuid(), Province = "d01", City = "d02", Area = "d03", Street = "d004", Other = "xxx2" },
                 Products = new HashSet<Product>
@@ -63,9 +63,9 @@ namespace ShardingCore.Web.Controllers
 
         // PUT api/<OrdersController>/5
         [HttpPut("{id}")]
-        public async Task Put(Guid id, [FromBody] string value)
+        public async Task Put(OrderId id, [FromBody] string value)
         {
-            var order = await _db.Set<Order>().FindAsync(new OrderId(id)) ?? throw new Exception("订单未找到");
+            var order = await _db.Set<Order>().FindAsync(id) ?? throw new Exception("订单未找到");
 
             order.Seller.Name = value;
 

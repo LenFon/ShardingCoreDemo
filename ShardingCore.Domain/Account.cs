@@ -1,12 +1,16 @@
-﻿namespace ShardingCore.Domain;
+﻿using Len.StronglyTypedId;
+
+namespace ShardingCore.Domain;
+
+public record struct AccountId(Guid Value) : IStronglyTypedId<Guid>
+{
+    public static IStronglyTypedId<Guid> Create(Guid value) => new AccountId(value);
+}
 
 public class Account
 {
 
-    public Guid Id { get; set; }
+    public AccountId Id { get; set; }
 
     public string Name { get; set; } = default!;
 }
-
-public class Buyer : Account { }
-public class Seller : Account { }

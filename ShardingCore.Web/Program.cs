@@ -43,8 +43,7 @@ try
     builder.Services.AddShardingCoreDbContext(o =>
     {
         //use your data base connection string
-        o.AddDefaultDataSource(Guid.NewGuid().ToString("n"),
-            "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=EfCoreShardingTableDb;User ID=sa;Password=1;");
+        o.AddDefaultDataSource("default", builder.Configuration.GetConnectionString("DefaultConnection"));
     });
 
     builder.Host.UseSerilog();
