@@ -2,10 +2,8 @@
 
 namespace ShardingCore.Domain;
 
-public record struct AccountId(Guid Value) : IStronglyTypedId<Guid>
-{
-    public static IStronglyTypedId<Guid> Create(Guid value) => new AccountId(value);
-}
+[StronglyTypedId]
+public partial record struct AccountId(Guid Value);
 
 public class Account
 {

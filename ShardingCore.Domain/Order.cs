@@ -3,10 +3,8 @@
 namespace ShardingCore.Domain;
 
 
-public record struct OrderId(Guid Value) : IStronglyTypedId<Guid>
-{
-    public static IStronglyTypedId<Guid> Create(Guid value) => new OrderId(value);
-}
+[StronglyTypedId]
+public partial record struct OrderId(Guid Value);
 
 public class Order
 {

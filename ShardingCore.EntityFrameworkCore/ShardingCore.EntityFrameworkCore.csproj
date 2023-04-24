@@ -6,7 +6,7 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Len.StronglyTypedId.EntityFrameworkCore" Version="1.0.3" />
+		<PackageReference Include="Len.StronglyTypedId.EntityFrameworkCore" Version="1.0.7" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
 		<PackageReference Include="ShardingCore" Version="7.7.1.7" />
 	</ItemGroup>

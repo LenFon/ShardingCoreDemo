@@ -24,12 +24,8 @@ try
     };
 
     // Add services to the container.
-    builder.Services.AddControllers().AddStronglyTypedId(options =>
+    builder.Services.AddControllers().AddJsonOptions(o =>
     {
-        options.RegisterServicesFromAssemblies(assemblies);
-    }).AddJsonOptions(o =>
-    {
-        o.JsonSerializerOptions.AddStronglyTypedId();
         o.JsonSerializerOptions.MaxDepth = 10;
     });
 
